@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventHub • Internal Department Event & Ticket Booking System</title>
+    <meta name="description" content="A modern, high-performance event discovery and ticket booking application designed for internal university and department fests.">
+    
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Ambient Glows -->
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+
+    <!-- Presentation Demo Banner -->
+    <header class="demo-banner">
+        <div class="demo-banner-content">
+            <div class="demo-badge">
+                <span class="pulse-dot"></span>
+                <span>PROJECT DEMO MODE</span>
+            </div>
+            <p class="demo-text">Internal Department Event Ticket Booking & Management System</p>
+            <div class="demo-actions">
+                <button id="btn-seed-data" class="btn-demo-pill" title="Populate demo data for presentation">
+                    <span class="icon">⚡</span> Seed Demo Bookings
+                </button>
+                <button id="btn-reset-demo" class="btn-demo-pill btn-demo-reset" title="Reset to initial state">
+                    <span class="icon">↺</span> Reset Data
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar" id="main-nav">
+        <div class="nav-container">
+            <div class="brand" id="brand-logo">
+                <div class="brand-icon">🎟️</div>
+                <div class="brand-text">
+                    <span class="brand-title">Event<span class="text-gradient">Hub</span></span>
+                    <span class="brand-subtitle">Campus Fest & Ticketing</span>
+                </div>
+            </div>
+
+            <!-- View Navigation Switcher -->
+            <div class="nav-tabs" role="tablist">
+                <button class="nav-tab active" id="tab-events" data-target="events-view">
+                    <span class="icon">📅</span> Browse Events
+                </button>
+                <button class="nav-tab" id="tab-my-tickets" data-target="tickets-view">
+                    <span class="icon">🎫</span> My Tickets
+                    <span class="badge-count" id="nav-ticket-count">0</span>
+                </button>
+                <button class="nav-tab" id="tab-admin" data-target="admin-view">
+                    <span class="icon">📊</span> Organizer Dashboard
+                </button>
+            </div>
+
+            <div class="nav-user-action">
+                <button class="btn-primary-ghost" id="btn-create-event-trigger">
+                    <span>+ New Event</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- App Main Container -->
+    <main class="main-content">
+        <!-- ============================================== -->
+        <!-- VIEW 1: BROWSE EVENTS VIEW                    -->
+        <!-- ============================================== -->
+        <section id="events-view" class="view-section active">
+            <!-- Hero Spotlight -->
+            <div class="hero-section">
+                <div class="hero-chip">🚀 University Departmental Symposiums & Fests 2026</div>
+                <h1 class="hero-title">Discover & Reserve Tickets for <span class="text-gradient">Campus Events</span></h1>
+                <p class="hero-desc">Seamlessly book your seat, gain instant verified digital passes with QR security, and experience college fests effortlessly.</p>
+
+                <!-- Search & Filters -->
+                <div class="filter-glass-bar">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="event-search-input" placeholder="Search by event name, department, or venue..." autocomplete="off">
+                    </div>
+                    <div class="category-pills" id="category-pills">
+                        <button class="pill-btn active" data-category="all">All Events</button>
+                        <button class="pill-btn" data-category="Technical">Technical</button>
+                        <button class="pill-btn" data-category="Workshops">Workshops</button>
+                        <button class="pill-btn" data-category="Cultural">Cultural</button>
+                        <button class="pill-btn" data-category="Gaming">Gaming & Sports</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Grid -->
+            <div class="events-container">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Upcoming Live Events</h2>
+                        <p class="section-subtitle">Real-time seat counters and live event timers</p>
+                    </div>
+                    <div class="stats-counter" id="live-events-count">Loading events...</div>
+                </div>
+
+                <div class="events-grid" id="events-grid-list">
+                    <!-- Event cards dynamically rendered by script.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 2: MY TICKETS WALLET                     -->
+        <!-- ============================================== -->
+        <section id="tickets-view" class="view-section">
+            <div class="section-header">
+                <div>
+                    <h1 class="section-title">🎫 My Booked Tickets & Passes</h1>
+                    <p class="section-subtitle">Present your verified QR pass at the entrance gate</p>
+                </div>
+            </div>
+
+            <div class="my-tickets-container" id="my-tickets-list">
+                <!-- Dynamically populated or empty state -->
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 3: ORGANIZER / ADMIN DASHBOARD           -->
+        <!-- ============================================== -->
+        <section id="admin-view" class="view-section">
+            <div class="section-header">
+                <div>
+                    <h1 class="section-title">📊 Organizer Analytics & Check-in Desk</h1>
+                    <p class="section-subtitle">Monitor ticket sales, revenue breakdown, and verify attendee admissions</p>
+                </div>
+                <div class="admin-quick-actions">
+                    <button class="btn-primary" id="btn-admin-add-event">
+                        <span>+ Host New Event</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Metrics KPI Cards -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon icon-purple">🎟️</div>
+                    <div class="metric-info">
+                        <span class="metric-label">Total Tickets Sold</span>
+                        <h3 class="metric-value" id="metric-total-tickets">0</h3>
+                        <span class="metric-sub text-success" id="metric-tickets-trend">Across active events</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon icon-emerald">💰</div>
+                    <div class="metric-info">
+                        <span class="metric-label">Total Revenue Generated</span>
+                        <h3 class="metric-value" id="metric-total-revenue">₹0</h3>
+                        <span class="metric-sub text-info">Zero commission internal sales</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon icon-cyan">🎯</div>
+                    <div class="metric-info">
+                        <span class="metric-label">Occupancy Rate</span>
+                        <h3 class="metric-value" id="metric-occupancy">0%</h3>
+                        <span class="metric-sub" id="metric-capacity-text">0 / 0 Seats Filled</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon icon-amber">✅</div>
+                    <div class="metric-info">
+                        <span class="metric-label">Attendees Checked-In</span>
+                        <h3 class="metric-value" id="metric-checked-in">0</h3>
+                        <span class="metric-sub" id="metric-checkin-percent">Gate check-in status</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendees Master Log Table -->
+            <div class="glass-panel table-panel">
+                <div class="table-header-bar">
+                    <div class="table-title-group">
+                        <h3>Registered Attendees & Bookings Roster</h3>
+                        <span class="badge-pill" id="attendees-table-count">0 Records</span>
+                    </div>
+                    <div class="table-filters">
+                        <input type="text" id="admin-search-attendees" placeholder="Search by name, roll no, or ticket ID..." class="input-glass-sm">
+                        <button class="btn-glass-sm" id="btn-export-csv">📥 Export CSV</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table" id="bookings-table">
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Attendee Name</th>
+                                <th>Roll / ID</th>
+                                <th>Event</th>
+                                <th>Qty</th>
+                                <th>Paid</th>
+                                <th>Booking Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookings-table-body">
+                            <!-- Populated via script.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ============================================== -->
+    <!-- MODAL 1: EVENT BOOKING MODAL                   -->
+    <!-- ============================================== -->
+    <div class="modal-backdrop" id="booking-modal">
+        <div class="modal-card booking-modal-card">
+            <button class="modal-close-btn" id="btn-close-booking" aria-label="Close modal">&times;</button>
+            
+            <div class="modal-header">
+                <div class="modal-badge" id="modal-event-cat">Technical</div>
+                <h2 class="modal-title" id="modal-event-name">Event Name</h2>
+                <p class="modal-subtitle" id="modal-event-dept">Department & Venue</p>
+            </div>
+
+            <div class="modal-body-split">
+                <!-- Left: Booking Form -->
+                <form id="ticket-booking-form" class="booking-form" novalidate>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="book-full-name">Full Name <span class="req">*</span></label>
+                            <input type="text" id="book-full-name" required placeholder="e.g. Rahul Sharma">
+                            <small class="error-msg" id="err-name"></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="book-roll-no">Student / Staff ID <span class="req">*</span></label>
+                            <input type="text" id="book-roll-no" required placeholder="e.g. 2026CS104">
+                            <small class="error-msg" id="err-roll"></small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="book-email">College / Personal Email <span class="req">*</span></label>
+                            <input type="email" id="book-email" required placeholder="rahul@college.edu">
+                            <small class="error-msg" id="err-email"></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="book-phone">Phone Number <span class="req">*</span></label>
+                            <input type="tel" id="book-phone" required placeholder="9876543210">
+                            <small class="error-msg" id="err-phone"></small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ticket Tier</label>
+                        <div class="tier-selector" id="tier-selector-container">
+                            <label class="tier-card active">
+                                <input type="radio" name="ticket-tier" value="standard" checked>
+                                <div class="tier-info">
+                                    <span class="tier-name">Standard Entry</span>
+                                    <span class="tier-desc">General access to sessions</span>
+                                </div>
+                                <span class="tier-price" id="tier-price-std">₹150</span>
+                            </label>
+                            <label class="tier-card">
+                                <input type="radio" name="ticket-tier" value="vip">
+                                <div class="tier-info">
+                                    <span class="tier-name">VIP Delegate 🌟</span>
+                                    <span class="tier-desc">Front row + Kit & Refreshment</span>
+                                </div>
+                                <span class="tier-price" id="tier-price-vip">₹300</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-row quantity-promo-row">
+                        <div class="form-group">
+                            <label for="book-qty">Ticket Quantity</label>
+                            <div class="qty-stepper">
+                                <button type="button" class="btn-qty" id="qty-minus">-</button>
+                                <input type="number" id="book-qty" value="1" min="1" max="5" readonly>
+                                <button type="button" class="btn-qty" id="qty-plus">+</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="promo-input">Discount Promo Code</label>
+                            <div class="promo-input-group">
+                                <input type="text" id="promo-input" placeholder="e.g. STUDENT20">
+                                <button type="button" id="btn-apply-promo" class="btn-promo">Apply</button>
+                            </div>
+                            <small class="promo-hint" id="promo-status-msg">Try 'STUDENT20' for 20% off!</small>
+                        </div>
+                    </div>
+
+                    <!-- Price Calculation Summary Box -->
+                    <div class="price-summary-box">
+                        <div class="summary-line">
+                            <span>Base Rate (<span id="summary-qty-count">1</span> ticket)</span>
+                            <span id="summary-base-rate">₹150</span>
+                        </div>
+                        <div class="summary-line text-success" id="summary-discount-row" style="display: none;">
+                            <span>Promo Discount (<span id="summary-discount-code">CODE</span>)</span>
+                            <span id="summary-discount-val">-₹0</span>
+                        </div>
+                        <div class="summary-line total-line">
+                            <span>Total Payable Amount</span>
+                            <span class="final-total" id="summary-final-total">₹150</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary btn-block" id="btn-confirm-booking">
+                        <span class="icon">✨</span> Complete Booking & Generate Pass
+                    </button>
+                </form>
+
+                <!-- Right: Quick Event Info & Timer -->
+                <div class="modal-event-sidebar">
+                    <div class="sidebar-timer-box">
+                        <span class="sidebar-timer-title">⏳ Event Starts In</span>
+                        <div class="countdown-clock" id="modal-countdown">
+                            <div class="clock-unit"><span class="unit-val" id="m-cd-days">00</span><span class="unit-lbl">Days</span></div>
+                            <div class="clock-sep">:</div>
+                            <div class="clock-unit"><span class="unit-val" id="m-cd-hours">00</span><span class="unit-lbl">Hrs</span></div>
+                            <div class="clock-sep">:</div>
+                            <div class="clock-unit"><span class="unit-val" id="m-cd-mins">00</span><span class="unit-lbl">Min</span></div>
+                            <div class="clock-sep">:</div>
+                            <div class="clock-unit"><span class="unit-val" id="m-cd-secs">00</span><span class="unit-lbl">Sec</span></div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-details-list">
+                        <div class="s-item">
+                            <span class="s-icon">📍</span>
+                            <div>
+                                <strong class="s-lbl">Venue</strong>
+                                <p id="m-side-venue">Main Auditorium</p>
+                            </div>
+                        </div>
+                        <div class="s-item">
+                            <span class="s-icon">🗓️</span>
+                            <div>
+                                <strong class="s-lbl">Date & Time</strong>
+                                <p id="m-side-datetime">April 28, 2026 - 10:00 AM</p>
+                            </div>
+                        </div>
+                        <div class="s-item">
+                            <span class="s-icon">👥</span>
+                            <div>
+                                <strong class="s-lbl">Seat Availability</strong>
+                                <p id="m-side-seats">140 seats available</p>
+                                <div class="progress-bar-wrap">
+                                    <div class="progress-bar-fill" id="m-side-progress" style="width: 70%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MODAL 2: DIGITAL E-TICKET PASS PREVIEW         -->
+    <!-- ============================================== -->
+    <div class="modal-backdrop" id="ticket-pass-modal">
+        <div class="modal-card ticket-pass-modal-card">
+            <button class="modal-close-btn" id="btn-close-pass" aria-label="Close modal">&times;</button>
+            
+            <div class="pass-modal-top">
+                <div class="success-icon-badge">🎉</div>
+                <h2>Booking Confirmed!</h2>
+                <p>Your official digital pass has been generated. Keep it ready for entrance scanning.</p>
+            </div>
+
+            <!-- Boarding-Pass Style Digital Ticket -->
+            <div class="digital-ticket" id="printable-digital-pass">
+                <div class="ticket-header">
+                    <div class="ticket-brand">
+                        <span class="t-logo">🎟️</span>
+                        <div>
+                            <h4>EventHub Verified Pass</h4>
+                            <small id="t-pass-event-dept">Department of Computer Science</small>
+                        </div>
+                    </div>
+                    <div class="ticket-tier-badge" id="t-pass-tier">Standard Pass</div>
+                </div>
+
+                <div class="ticket-body">
+                    <h3 class="t-event-name" id="t-pass-event-name">TechNova 2026</h3>
+                    <div class="ticket-meta-grid">
+                        <div class="t-meta">
+                            <span class="t-meta-lbl">Attendee Name</span>
+                            <span class="t-meta-val" id="t-pass-name">Rahul Sharma</span>
+                        </div>
+                        <div class="t-meta">
+                            <span class="t-meta-lbl">Roll / ID</span>
+                            <span class="t-meta-val" id="t-pass-roll">2026CS104</span>
+                        </div>
+                        <div class="t-meta">
+                            <span class="t-meta-lbl">Date & Time</span>
+                            <span class="t-meta-val" id="t-pass-datetime">Apr 28, 2026 - 10:00 AM</span>
+                        </div>
+                        <div class="t-meta">
+                            <span class="t-meta-lbl">Venue</span>
+                            <span class="t-meta-val" id="t-pass-venue">Main Auditorium</span>
+                        </div>
+                        <div class="t-meta">
+                            <span class="t-meta-lbl">Tickets Reserved</span>
+                            <span class="t-meta-val" id="t-pass-qty">1 Person</span>
+                        </div>
+                        <div class="t-meta">
+                            <span class="t-meta-lbl">Amount Paid</span>
+                            <span class="t-meta-val text-success" id="t-pass-amount">₹150</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ticket-tear-line">
+                    <span class="tear-notch notch-left"></span>
+                    <span class="tear-notch notch-right"></span>
+                </div>
+
+                <div class="ticket-footer">
+                    <div class="qr-code-wrapper" id="t-pass-qr-container">
+                        <!-- High tech SVG QR Code rendered dynamically -->
+                    </div>
+                    <div class="t-security-info">
+                        <span class="t-sec-lbl">Security Pass ID</span>
+                        <span class="t-sec-id" id="t-pass-id">TN-2026-8492</span>
+                        <span class="t-sec-hint">Scan via Organizer check-in scanner at gate</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ticket-action-bar">
+                <button class="btn-primary" id="btn-print-ticket">
+                    <span class="icon">🖨️</span> Print / Save PDF
+                </button>
+                <button class="btn-glass" id="btn-close-pass-action">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MODAL 3: ADD NEW EVENT (ORGANIZER)             -->
+    <!-- ============================================== -->
+    <div class="modal-backdrop" id="new-event-modal">
+        <div class="modal-card">
+            <button class="modal-close-btn" id="btn-close-new-event">&times;</button>
+            <div class="modal-header">
+                <h2>✨ Host a New Department Event</h2>
+                <p class="modal-subtitle">Publish an event to the campus live ticketing hub</p>
+            </div>
+            
+            <form id="create-event-form" class="booking-form">
+                <div class="form-group">
+                    <label for="new-event-name">Event Title <span class="req">*</span></label>
+                    <input type="text" id="new-event-name" required placeholder="e.g. AI & Robotics National Summit">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="new-event-dept">Department <span class="req">*</span></label>
+                        <input type="text" id="new-event-dept" required placeholder="e.g. Mechanical & ECE">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-event-category">Category <span class="req">*</span></label>
+                        <select id="new-event-category">
+                            <option value="Technical">Technical</option>
+                            <option value="Workshops">Workshops</option>
+                            <option value="Cultural">Cultural</option>
+                            <option value="Gaming">Gaming & Sports</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="new-event-date">Event Date & Time <span class="req">*</span></label>
+                        <input type="datetime-local" id="new-event-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-event-venue">Venue <span class="req">*</span></label>
+                        <input type="text" id="new-event-venue" required placeholder="e.g. Seminar Hall 3">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="new-event-price">Ticket Price (₹) <span class="req">*</span></label>
+                        <input type="number" id="new-event-price" min="0" required placeholder="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-event-seats">Total Seats Capacity <span class="req">*</span></label>
+                        <input type="number" id="new-event-seats" min="10" required placeholder="150">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="new-event-desc">Event Overview & Highlights</label>
+                    <textarea id="new-event-desc" rows="3" placeholder="Brief summary of agenda, keynote speakers, or competition rules..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary btn-block">Publish Event to Portal</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2026 EventHub • Internal Department Event Ticketing System Demo</p>
+            <p class="footer-links">
+                <span>⚡ Pure HTML, CSS & Vanilla JavaScript</span>
+                <span>•</span>
+                <span>🔒 Built for Campus Presentations & Tech Fests</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- App Logic Script -->
+    <script src="script.js"></script>
+</body>
+</html>
